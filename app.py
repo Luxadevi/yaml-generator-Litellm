@@ -7,11 +7,23 @@ app = Flask(__name__)
 
 def process_provider_data(provider, form_data, provider_config):
     litellm_params = {}
-    for field, field_type in provider_config.get('fields', {}).items():
+    for fieldObj in provider_config.get('fields', []):
+        field = list(fieldObj.keys())[0]  # Get the field name
+        field_type = fieldObj[field]
+
         if field_type == 'checkbox':
             litellm_params[field] = field in form_data
         else:
+            # For huggingface, skip adding user to litellm_params
+            if provider == "huggingface" and field == 'user':
+                continue
             litellm_params[field] = form_data.get(field, provider_config.get('defaults', {}).get(field))
+
+    # Special handling for the huggingface provider
+    if provider == "huggingface":
+        user = form_data.get('user', '')
+        model = form_data.get('model', '')
+        litellm_params['model'] = f"huggingface/{user}/{model}" if user and model else model
 
     return litellm_params
 

@@ -1,22 +1,22 @@
 {
     "providers": {
         "ollama": {
-            "fields": {
-                "model": "text",
-                "api_base": "text",
-                "stream": "checkbox"
-            },
+            "fields": [
+                {"model": "text"},
+                {"api_base": "text"},
+                {"stream": "checkbox"}
+            ],
             "defaults": {
                 "stream": false
             }
         },
         "huggingface": {
-            "fields": {
-                "user": "text",
-                "model": "text",
-                "api_base": "text"
-            }
+            "fields": [
+                {"user": "text"},
+                {"model": "text"},
+                {"api_base": "text"},
+                {"api_key": "text"}
+            ]
         }
-        
     }
 }

@@ -3,35 +3,29 @@
 <head>
     <title>LiteLLM Config Generator</title>
     <script type="text/javascript">
-        var providerOptions = {{ options.providers | tojson | safe }};
-
         function updateProviderFields() {
+            var providerOptions = {{ options.providers | tojson | safe }};
             var provider = document.getElementById('providers').value;
             var fieldContainer = document.getElementById('provider-fields');
 
-            // Clear existing fields
-            fieldContainer.innerHTML = '';
+            fieldContainer.innerHTML = ''; // Clear existing fields
 
-            // Add new fields based on the selected provider
             if (providerOptions[provider]) {
-                for (var key in providerOptions[provider].fields) {
+                var fields = providerOptions[provider].fields;
+                fields.forEach(function(fieldObj) {
+                    var key = Object.keys(fieldObj)[0];
                     var label = document.createElement('label');
                     label.htmlFor = key;
-                    label.appendChild(document.createTextNode(key.charAt(0).toUpperCase() + key.slice(1) + ': '));
+                    label.innerText = key.charAt(0).toUpperCase() + key.slice(1) + ': ';
                     fieldContainer.appendChild(label);
 
-                    var inputType = providerOptions[provider].fields[key];
                     var input = document.createElement('input');
-                    input.type = inputType === 'checkbox' ? 'checkbox' : 'text';
+                    input.type = fieldObj[key] === 'checkbox' ? 'checkbox' : 'text';
                     input.name = key;
                     input.id = key;
-                    if (inputType === 'checkbox') {
-                        label.appendChild(input); // Checkbox next to its label
-                    } else {
-                        fieldContainer.appendChild(input);
-                    }
+                    fieldContainer.appendChild(input);
                     fieldContainer.appendChild(document.createElement('br'));
-                }
+                });
             }
         }
 
@@ -57,38 +51,28 @@
 <body>
     <h1>LiteLLM Config Generator</h1>
     <form method="post" onsubmit="return submitForm();">
-        <!-- Field for model name -->
         <label for="model_name">Model Name:</label>
-        <input type="text" id="model_name" name="model_name">
-        <br>
+        <input type="text" id="model_name" name="model_name"><br>
 
-        <!-- Dropdown for providers -->
         <label for="providers">Choose a provider:</label>
         <select name="providers" id="providers" onchange="updateProviderFields()">
             <option value="">Select a provider</option>
             {% for provider in options.providers %}
             <option value="{{ provider }}">{{ provider }}</option>
             {% endfor %}
-        </select>
-        <br>
+        </select><br>
 
-        <!-- Container for dynamic provider fields -->
         <div id="provider-fields"></div>
 
-        <!-- Field for output directory -->
         <label for="output_dir">Output Directory (optional):</label>
-        <input type="text" id="output_dir" name="output_dir">
-        <br>
+        <input type="text" id="output_dir" name="output_dir"><br>
 
-        <!-- Checkbox for only showing YAML -->
         <label for="show_yaml">Only Show Generated YAML:</label>
-        <input type="checkbox" id="show_yaml" name="show_yaml">
-        <br>
+        <input type="checkbox" id="show_yaml" name="show_yaml"><br>
 
         <input type="submit" value="Generate YAML">
     </form>
 
-    <!-- Div to display YAML -->
     <div id="yaml_output" style="white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; padding: 10px;"></div>
 </body>
 </html>
