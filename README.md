@@ -20,8 +20,8 @@ To set up the LiteLLM Config Generator on your local machine, follow these steps
 Then...
 
 ```bash
-git clone https://github.com/your-username/litellm-config-generator.git
-cd litellm-config-generator
+git clone https://github.com/your-username/yaml-generator-Litellm.git
+cd yaml-generator-Litellm/
 ``` 
 
 
