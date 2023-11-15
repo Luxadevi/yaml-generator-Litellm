@@ -16,8 +16,8 @@ LiteLLM Config Generator is a web-based tool designed to simplify the process of
 
 To set up the LiteLLM Config Generator on your local machine, follow these steps:
 
-1. **Clone the Repository:**
-
+1. **Fork the Repository:**
+Then...
 
 ```bash
 git clone https://github.com/your-username/litellm-config-generator.git
