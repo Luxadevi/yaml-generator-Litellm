@@ -21,12 +21,39 @@
         "palm_api": {
             "fields": [
                 {"api_key": "text"}
-                
             ],
             "defaults": {
                 "model": "palm/chat-bison"
             }
-            
+        },
+        "aws-bedrock": {
+            "fields": [
+                {"aws_access_key_id": "text"},
+                {"aws_secret_access_key": "text"},
+                {
+                    "aws_region_name": {
+                        "type": "select",
+                        "options": [
+                            "us-east-1", "us-east-2", "us-west-1", "us-west-2", 
+                            "ca-central-1", "eu-west-1", "eu-west-2", "eu-central-1", 
+                            "eu-west-3", "eu-north-1", "sa-east-1", "ap-south-1", 
+                            "ap-southeast-1", "ap-southeast-2", "ap-northeast-1", 
+                            "ap-northeast-2", "me-south-1", "af-south-1"
+                        ]
+                    }
+                },
+                {
+                    "model": {
+                        "type": "select",
+                        "options": [
+                            "anthropic-claude-v2", "anthropic-claude-instant-v1", 
+                            "anthropic-claude-v1", "amazon-titan-lite", 
+                            "amazon-titan-express", "cohere-command", 
+                            "ai21-j2-mid", "ai21-j2-ultra"
+                        ]
+                    }
+                }
+            ]
         }
     }
 }
