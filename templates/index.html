@@ -4,105 +4,141 @@
     <title>LiteLLM Config Generator</title>
     <script type="text/javascript">
         var providerOptions = {{ options.providers | tojson | safe }};
+        var configCount = 0;
 
-        function updateProviderFields() {
-            var provider = document.getElementById('providers').value;
-            var fieldContainer = document.getElementById('provider-fields');
+        function addProviderConfig() {
+            configCount++;
+            var configContainer = document.createElement('div');
+            configContainer.id = 'config-' + configCount;
+            configContainer.innerHTML = '<h3>Configuration ' + configCount + '</h3>';
 
-            // Clear existing fields
+            // Model Name Field
+            var modelNameLabel = document.createElement('label');
+            modelNameLabel.htmlFor = 'model_name-' + configCount;
+            modelNameLabel.textContent = 'Model Name: ';
+            configContainer.appendChild(modelNameLabel);
+
+            var modelNameInput = document.createElement('input');
+            modelNameInput.type = 'text';
+            modelNameInput.id = 'model_name-' + configCount;
+            modelNameInput.name = 'model_name-' + configCount;
+            configContainer.appendChild(modelNameInput);
+            configContainer.appendChild(document.createElement('br'));
+
+            // Provider Dropdown
+            var providerLabel = document.createElement('label');
+            providerLabel.htmlFor = 'providers-' + configCount;
+            providerLabel.textContent = 'Choose a provider: ';
+            configContainer.appendChild(providerLabel);
+
+            var providerSelect = document.createElement('select');
+            providerSelect.name = 'providers-' + configCount;
+            providerSelect.id = 'providers-' + configCount;
+            providerSelect.onchange = function() { updateProviderFields(configCount); };
+            var defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select a provider';
+            providerSelect.appendChild(defaultOption);
+
+            for (var provider in providerOptions) {
+                var option = document.createElement('option');
+                option.value = provider;
+                option.textContent = provider;
+                providerSelect.appendChild(option);
+            }
+
+            configContainer.appendChild(providerSelect);
+            configContainer.appendChild(document.createElement('br'));
+
+            // Container for dynamic provider fields
+            var providerFieldsContainer = document.createElement('div');
+            providerFieldsContainer.id = 'provider-fields-' + configCount;
+            configContainer.appendChild(providerFieldsContainer);
+
+            document.getElementById('configurations').appendChild(configContainer);
+        }
+
+        function updateProviderFields(configNumber) {
+            var provider = document.getElementById('providers-' + configNumber).value;
+            var fieldContainer = document.getElementById('provider-fields-' + configNumber);
             fieldContainer.innerHTML = '';
 
-            // Add new fields based on the selected provider
             if (providerOptions[provider]) {
                 providerOptions[provider].fields.forEach(fieldObj => {
                     var fieldName = Object.keys(fieldObj)[0];
                     var fieldType = fieldObj[fieldName];
 
                     var label = document.createElement('label');
-                    label.htmlFor = fieldName;
-                    label.appendChild(document.createTextNode(fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ': '));
+                    label.htmlFor = fieldName + '-' + configNumber;
+                    label.textContent = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ': ';
                     fieldContainer.appendChild(label);
 
-                    if (typeof fieldType === 'object' && fieldType.type === 'select') {
-                        var select = document.createElement('select');
-                        select.name = fieldName;
-                        select.id = fieldName;
-
+                    var input;
+                    if (fieldType === 'checkbox') {
+                        input = document.createElement('input');
+                        input.type = 'checkbox';
+                    } else if (typeof fieldType === 'object' && fieldType.type === 'select') {
+                        input = document.createElement('select');
                         fieldType.options.forEach(option => {
                             var optionElement = document.createElement('option');
                             optionElement.value = option;
                             optionElement.textContent = option;
-                            select.appendChild(optionElement);
+                            input.appendChild(optionElement);
                         });
-
-                        fieldContainer.appendChild(select);
                     } else {
-                        var input = document.createElement('input');
-                        input.type = fieldType === 'checkbox' ? 'checkbox' : 'text';
-                        input.name = fieldName;
-                        input.id = fieldName;
-                        fieldContainer.appendChild(input);
+                        input = document.createElement('input');
+                        input.type = 'text';
                     }
-
+                    input.name = fieldName + '-' + configNumber;
+                    input.id = fieldName + '-' + configNumber;
+                    fieldContainer.appendChild(input);
                     fieldContainer.appendChild(document.createElement('br'));
                 });
             }
         }
+
         function submitForm() {
-    var formData = new FormData(document.querySelector('form'));
+            var formData = new FormData(document.querySelector('form'));
+            formData.append('config_count', configCount);
 
-    fetch('/', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.yaml) {
-            document.getElementById('yaml_output').textContent = data.yaml;
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.yaml) {
+                    document.getElementById('yaml_output').textContent = data.yaml;
+                } else {
+                    document.getElementById('yaml_output').textContent = 'No YAML generated.';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('yaml_output').textContent = 'Error generating YAML.';
+            });
+
+            return false; // Prevent form from submitting the traditional way
         }
-    })
-    .catch(error => console.error('Error:', error));
 
-    return false; // Prevent form from submitting the traditional way
-}
-
+        window.onload = function() {
+            addProviderConfig(); // Add initial configuration
+        };
     </script>
 </head>
 <body>
     <h1>LiteLLM Config Generator</h1>
     <form method="post" onsubmit="return submitForm();">
-        <!-- Field for model name -->
-        <label for="model_name">Model Name:</label>
-        <input type="text" id="model_name" name="model_name">
-        <br>
-
-        <!-- Dropdown for providers -->
-        <label for="providers">Choose a provider:</label>
-        <select name="providers" id="providers" onchange="updateProviderFields()">
-            <option value="">Select a provider</option>
-            {% for provider in options.providers %}
-            <option value="{{ provider }}">{{ provider }}</option>
-            {% endfor %}
-        </select>
-        <br>
-
-        <!-- Container for dynamic provider fields -->
-        <div id="provider-fields"></div>
-
-        <!-- Field for output directory -->
-        <label for="output_dir">Output Directory (optional):</label>
-        <input type="text" id="output_dir" name="output_dir">
-        <br>
-
+        <div id="configurations"></div>
+        <button type="button" onclick="addProviderConfig();">Add Next</button>
+        <br><br>
+        <input type="submit" value="Generate YAML">
         <!-- Checkbox for only showing YAML -->
         <label for="show_yaml">Only Show Generated YAML:</label>
         <input type="checkbox" id="show_yaml" name="show_yaml">
         <br>
-
-        <input type="submit" value="Generate YAML">
+        <!-- Div to display YAML -->
+        <div id="yaml_output" style="white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; padding: 10px;"></div>
     </form>
-
-    <!-- Div to display YAML -->
-    <div id="yaml_output" style="white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; padding: 10px;"></div>
 </body>
 </html>
