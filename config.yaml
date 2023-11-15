@@ -1,6 +1,4 @@
 model_list:
-- model_name: test
+- model_name: ''
   litellm_params:
-    user: one
-    model: test
-    api_base: http://127.0.0.1:8000
+    api_key: fddf

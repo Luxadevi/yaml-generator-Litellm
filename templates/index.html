@@ -4,30 +4,44 @@
     <title>LiteLLM Config Generator</title>
     <script type="text/javascript">
         function updateProviderFields() {
-            var providerOptions = {{ options.providers | tojson | safe }};
-            var provider = document.getElementById('providers').value;
-            var fieldContainer = document.getElementById('provider-fields');
+    var providerOptions = {{ options.providers | tojson | safe }};
+    var provider = document.getElementById('providers').value;
+    var fieldContainer = document.getElementById('provider-fields');
 
-            fieldContainer.innerHTML = ''; // Clear existing fields
+    fieldContainer.innerHTML = ''; // Clear existing fields
 
-            if (providerOptions[provider]) {
-                var fields = providerOptions[provider].fields;
-                fields.forEach(function(fieldObj) {
-                    var key = Object.keys(fieldObj)[0];
-                    var label = document.createElement('label');
-                    label.htmlFor = key;
-                    label.innerText = key.charAt(0).toUpperCase() + key.slice(1) + ': ';
-                    fieldContainer.appendChild(label);
+    if (providerOptions[provider]) {
+        var fields = providerOptions[provider].fields;
+        fields.forEach(function(fieldObj) {
+            var key = Object.keys(fieldObj)[0];
+            var label = document.createElement('label');
+            label.htmlFor = key;
+            label.innerText = key.charAt(0).toUpperCase() + key.slice(1) + ': ';
+            fieldContainer.appendChild(label);
 
-                    var input = document.createElement('input');
-                    input.type = fieldObj[key] === 'checkbox' ? 'checkbox' : 'text';
-                    input.name = key;
-                    input.id = key;
-                    fieldContainer.appendChild(input);
-                    fieldContainer.appendChild(document.createElement('br'));
+            if (fieldObj[key] === 'select') {
+                var select = document.createElement('select');
+                select.name = key;
+                select.id = key;
+                (providerOptions[provider].model_options || []).forEach(function(optionValue) {
+                    var option = document.createElement('option');
+                    option.value = optionValue;
+                    option.text = optionValue;
+                    select.appendChild(option);
                 });
+                fieldContainer.appendChild(select);
+            } else {
+                var input = document.createElement('input');
+                input.type = fieldObj[key] === 'checkbox' ? 'checkbox' : 'text';
+                input.name = key;
+                input.id = key;
+                fieldContainer.appendChild(input);
             }
-        }
+            fieldContainer.appendChild(document.createElement('br'));
+        });
+    }
+}
+
 
         function submitForm() {
             var formData = new FormData(document.querySelector('form'));

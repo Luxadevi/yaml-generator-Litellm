@@ -17,6 +17,16 @@
                 {"api_base": "text"},
                 {"api_key": "text"}
             ]
+        },
+        "palm_api": {
+            "fields": [
+                {"api_key": "text"}
+                
+            ],
+            "defaults": {
+                "model": "palm/chat-bison"
+            }
+            
         }
     }
 }

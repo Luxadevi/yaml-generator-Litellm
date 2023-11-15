@@ -14,9 +14,6 @@ def process_provider_data(provider, form_data, provider_config):
         if field_type == 'checkbox':
             litellm_params[field] = field in form_data
         else:
-            # For huggingface, skip adding user to litellm_params
-            if provider == "huggingface" and field == 'user':
-                continue
             litellm_params[field] = form_data.get(field, provider_config.get('defaults', {}).get(field))
 
     # Special handling for the huggingface provider
@@ -24,6 +21,11 @@ def process_provider_data(provider, form_data, provider_config):
         user = form_data.get('user', '')
         model = form_data.get('model', '')
         litellm_params['model'] = f"huggingface/{user}/{model}" if user and model else model
+
+    # Add default values for fields not in form_data
+    for key, value in provider_config.get('defaults', {}).items():
+        if key not in litellm_params:
+            litellm_params[key] = value
 
     return litellm_params
 
