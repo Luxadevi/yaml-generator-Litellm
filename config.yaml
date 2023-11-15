@@ -1,0 +1,6 @@
+model_list:
+- model_name: ollama/backed
+  litellm_params:
+    model: ollama/backed
+    api_base: http://127.0.0.1:8000
+    stream: true

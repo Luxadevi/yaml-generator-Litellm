@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LiteLLM Config Generator</title>
+    <script type="text/javascript">
+        var providerOptions = {{ options.providers | tojson | safe }};
+
+        function updateProviderFields() {
+            var provider = document.getElementById('providers').value;
+            var fieldContainer = document.getElementById('provider-fields');
+
+            // Clear existing fields
+            fieldContainer.innerHTML = '';
+
+            // Add new fields based on the selected provider
+            if (providerOptions[provider]) {
+                for (var key in providerOptions[provider].fields) {
+                    var label = document.createElement('label');
+                    label.htmlFor = key;
+                    label.appendChild(document.createTextNode(key.charAt(0).toUpperCase() + key.slice(1) + ': '));
+                    fieldContainer.appendChild(label);
+
+                    var inputType = providerOptions[provider].fields[key];
+                    var input = document.createElement('input');
+                    input.type = inputType;
+                    input.name = key;
+                    input.id = key;
+                    if (inputType === 'checkbox') {
+                        label.appendChild(input); // Checkbox next to its label
+                    } else {
+                        fieldContainer.appendChild(input);
+                    }
+                    fieldContainer.appendChild(document.createElement('br'));
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>LiteLLM Config Generator</h1>
+    <form method="post">
+        <!-- Dropdown for providers -->
+        <label for="providers">Choose a provider:</label>
+        <select name="providers" id="providers" onchange="updateProviderFields()">
+            <option value="">Select a provider</option>
+            {% for provider in options.providers %}
+            <option value="{{ provider }}">{{ provider }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Container for dynamic provider fields -->
+        <div id="provider-fields"></div>
+
+        <input type="submit" value="Generate YAML">
+    </form>
+</body>
+</html>

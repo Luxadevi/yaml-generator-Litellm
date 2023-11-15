@@ -1,0 +1,13 @@
+{
+    "providers": {
+        "ollama": {
+            "fields": {
+                "model_name": "text",
+                "api_base": "text",
+                "stream": "checkbox"
+                
+            }
+        }
+        
+    }
+}
