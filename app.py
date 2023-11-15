@@ -18,6 +18,12 @@ def process_provider_data(provider, form_data, provider_config, config_number):
             # Handle dropdown selections
             litellm_params[field] = form_data.get(form_field_name, provider_config.get('defaults', {}).get(field))
         else:
+            # For huggingface, skip adding user and optionally skip api_key
+            if provider == "huggingface":
+                if field == 'user':
+                    continue
+                if field == 'api_key' and not form_data.get(form_field_name):
+                    continue
             litellm_params[field] = form_data.get(form_field_name, provider_config.get('defaults', {}).get(field))
 
     # Apply default values if not present
