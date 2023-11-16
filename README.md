@@ -16,14 +16,12 @@ LiteLLM Config Generator is a web-based tool designed to simplify the process of
 
 To set up the LiteLLM Config Generator on your local machine, follow these steps:
 
-1. **Fork the Repository:**
-Then...
+1. **Clone the Repository:**
 
 ```bash
-git clone https://github.com/your-username/yaml-generator-Litellm.git
+git clone https://github.com/Luxadevi/yaml-generator-Litellm
 cd yaml-generator-Litellm/
 ``` 
-
 
 2. **Install Dependencies:**
 Ensure you have Python installed on your system. Then, install the required Python packages:
