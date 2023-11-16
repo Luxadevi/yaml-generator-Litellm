@@ -6,7 +6,30 @@
         var providerOptions = {{ options.providers | tojson | safe }};
         var configCount = 0;
 
+
+        function disablePreviousConfig(configCount) {
+            // Get the last configuration container by count
+            var lastConfigContainer = document.getElementById('config-' + configCount);
+            if (lastConfigContainer) {
+                var inputs = lastConfigContainer.getElementsByTagName('input');
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].readOnly = true; // Set text inputs to readonly
+                    inputs[i].disabled = true; // Set inputs like checkboxes, radio buttons to disabled
+                }
+                
+                var selects = lastConfigContainer.getElementsByTagName('select');
+                for (var i = 0; i < selects.length; i++) {
+                    selects[i].disabled = true; // Disable dropdowns
+                }
+                
+            }
+        }
+
         function addProviderConfig() {
+
+            // Disable fields in the last configuration group before adding a new one
+            disablePreviousConfig(configCount);
+
             configCount++;
             var configContainer = document.createElement('div');
             configContainer.id = 'config-' + configCount;
@@ -54,6 +77,7 @@
             var providerFieldsContainer = document.createElement('div');
             providerFieldsContainer.id = 'provider-fields-' + configCount;
             configContainer.appendChild(providerFieldsContainer);
+
 
             document.getElementById('configurations').appendChild(configContainer);
         }
@@ -125,20 +149,21 @@
             addProviderConfig(); // Add initial configuration
         };
     </script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <h1>LiteLLM Config Generator</h1>
     <form method="post" onsubmit="return submitForm();">
-        <div id="configurations"></div>
+        <div id="configurations" class="configuration-container">
+        </div>
         <button type="button" onclick="addProviderConfig();">Add Next</button>
         <br><br>
         <input type="submit" value="Generate YAML">
-        <!-- Checkbox for only showing YAML -->
-        <label for="show_yaml">Only Show Generated YAML:</label>
+        <label for="show_yaml" style="padding-top: 10px;"> Only Show Generated YAML:</label>
         <input type="checkbox" id="show_yaml" name="show_yaml">
         <br>
-        <!-- Div to display YAML -->
         <div id="yaml_output" style="white-space: pre-wrap; margin-top: 20px; border: 1px solid #ccc; padding: 10px;"></div>
+    </form>
     </form>
 </body>
 </html>

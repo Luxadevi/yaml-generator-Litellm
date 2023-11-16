@@ -1,0 +1,78 @@
+body {
+    background-color: #121212; /* Dark background for dark mode */
+    color: #e8e7f7; /* Light text color for readability */
+    font-family: Arial, sans-serif; /* Default font */
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#configurations {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 600px; /* Adjust the max width as needed */
+}
+
+.configuration-group {
+    flex-basis: 48%; /* Adjust the width of each column */
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    color: white;
+}
+
+button, input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 200px;
+}
+
+input[type="submit"] {
+    background-color: #04AA6D;
+}
+
+input[type="checkbox"] {
+    margin-left: 10px;
+}
+
+#yaml_output {
+    background-color: #222;
+    color: #ddd;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 20px;
+}
+.configuration-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust the space between configuration groups */
+}
+
+.configuration-group {
+    flex: 1 1 45%; /* Each group will take up roughly half the container's width */
+}
